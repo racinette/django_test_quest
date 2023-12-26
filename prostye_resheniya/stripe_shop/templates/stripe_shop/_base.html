@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock title %}</title>
+    {% if include_stripe %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      var STRIPE_CLIENT_API_KEY = "{{ STRIPE_CLIENT_API_KEY }}";
+      var stripe = new Stripe(STRIPE_CLIENT_API_KEY);
+    </script>
+    {% endif %}
+    <script defer>
+      {% block script %}{% endblock script %}
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="{% url 'get_all_items' %}">Товары</a>
+      {% if cart_length > 0 %}
+      <a href="{% url 'currency_carts' %}">Корзина ({{ cart_length }})</a>
+      {% else %}
+      <p>Корзина пуста.</p>
+      {% endif %}
+    </div>
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>

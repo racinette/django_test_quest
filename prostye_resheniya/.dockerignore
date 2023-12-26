@@ -1,0 +1,16 @@
+**/*.sqlite3
+**/.env
+__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/README.md
+.git
+.cache
+.venv
+venv
+CHANGELOG.md
+docker-compose.yml
+Dockerfile
+/run.sh
+*/static

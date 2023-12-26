@@ -1,0 +1,21 @@
+version: '3'
+services:
+  django-server:
+    build:
+      context: "./prostye_resheniya/"
+    restart: "always"
+    expose:
+      - "8000"
+    env_file:
+      - ./prostye_resheniya/prostye_resheniya/.env
+
+  nginx:
+    build:
+      context: "./nginx/"
+    restart: "always"
+    ports:
+      - "7890:80"
+    volumes:
+      - ./nginx/static/:/usr/share/nginx/html/static/
+    depends_on:
+      - django-server

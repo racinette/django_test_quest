@@ -1,0 +1,12 @@
+{% extends 'stripe_shop/_base.html' %}
+
+
+{% block content %}
+
+<div class="currency-cart">
+{% for cart in currency_carts %}
+<a href="{% url 'cart' cart.currency %}"><span class="currency">{{ cart.currency }}</span><span class="count">({{ cart.length }})</span></a>
+{% endfor %}
+</div>
+
+{% endblock content %}

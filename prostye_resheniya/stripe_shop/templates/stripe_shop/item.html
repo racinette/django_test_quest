@@ -1,0 +1,33 @@
+{% extends 'stripe_shop/_base.html' %}
+
+{% block title %}{{ item.name }}{% endblock title %}
+
+{% block script %}
+const buyItemUrl = "{% url 'buy_item' item.pk %}";
+
+window.onload = () => {
+  const buyBtn = document.getElementById('buy-btn');
+  buyBtn.onclick = async () => {
+    const res = await fetch(buyItemUrl);
+    const jsonResp = await res.json();
+    const sessionId = jsonResp?.checkout_session_id;
+    if (!jsonResp || !sessionId) {
+      throw new Error('bad json response');
+    }
+    stripe.redirectToCheckout({ sessionId });
+  };
+};
+{% endblock script %}
+
+{% block content %}
+<div class="item">
+  <h1>{{ item.name }}</h1>
+  <p>{{ item.description }}</p>
+  <p>{{ formatted_price }} {{ item.currency }}</p>
+  <input type="button" value="Buy" id="buy-btn">
+  <form action="{% url 'add_to_cart' item.pk %}">
+    {% csrf_token %}
+    <input type="submit" value="Add to Cart">
+  </form>
+</div>
+{% endblock content %}

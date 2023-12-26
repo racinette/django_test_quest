@@ -1,0 +1,53 @@
+{% extends 'stripe_shop/_base.html' %}
+
+{% block script %}
+const buyCartUrl = "{% url 'buy_cart' currency %}";
+
+window.onload = () => {
+  const buyBtn = document.getElementById('checkout-button');
+  buyBtn.onclick = async () => {
+    const res = await fetch(buyCartUrl);
+    const jsonResp = await res.json();
+    const sessionId = jsonResp?.checkout_session_id;
+    if (!jsonResp || !sessionId) {
+      throw new Error('bad json response');
+    }
+    stripe.redirectToCheckout({ sessionId });
+  };
+};
+{% endblock %}
+
+
+{% block content %}
+{% for item in cart_items %}
+<div class="item">
+    <div class="info">
+        <a class="item-name" href="{% url 'get_item' item.item.pk %}">{{item.item.name}}</a>
+        <span class="quantity">({{ item.count }})</span>
+        <span class="full-price">{{ item.full_price_pretty }} {{ item.item.currency }}</span>
+    </div>
+    <div class="manage">
+        <form class="plus-form" action="{% url 'add_another_such_item_to_cart' item.item.pk %}">
+            {% csrf_token %}
+            <input value="➕" type="submit">
+        </form>
+        <form class="minus-form" action="{% url 'remove_one_such_item_from_cart' item.item.pk %}">
+            {% csrf_token %}
+            <input value="➖" type="submit">
+        </form>
+        <form class="remove-all-form" action="{% url 'remove_all_such_items_from_cart' item.item.pk %}">
+            {% csrf_token %}
+            <input value="🗑️" type="submit">
+        </form>
+    </div>
+    <br>
+</div>
+{% endfor %}
+{% if cart_items %}
+<button id="checkout-button">Checkout</button>
+<form class="cart-checkout-form" action="{% url 'cart_checkout' currency %}">
+    {% csrf_token %}
+    <input class="checkout-button" type="submit" value="Checkout (Stripe Payment Intent)">
+</form>
+{% endif %}
+{% endblock content %}
